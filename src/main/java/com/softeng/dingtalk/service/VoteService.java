@@ -379,7 +379,7 @@ public class VoteService {
                 // todo- 论文投票AC变化，对于硕士生是1分，对于博士生是2分
                 .ac(coefficient * (user.getPosition() == Position.DOCTOR ? 2 : 1))
                 .classify(AcRecord.VOTE)
-                .reason((coefficient == 0 ? "投稿中止：" : (coefficient == 1 ? "投票预测正确：" : "投票预测错误：") + title))
+                .reason((coefficient == 0 ? "投稿中止：" + title: (coefficient == 1 ? "投票预测正确：" : "投票预测错误：") + title))
                 .createTime(dateTime)
                 .build();
     }

@@ -123,7 +123,6 @@ public class SystemController {
      */
     @GetMapping("/system/disable/user/{uid}")
     public void disableUser(@PathVariable int uid) {
-
         systemService.disableUser(uid);
     }
 

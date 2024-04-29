@@ -243,7 +243,10 @@ public class PaperService {
      * @return AC值
      */
     public double calculateAc(InternalPaper internalPaper, double sum, int rank) {
-        return calculateWeightOfAc(internalPaper) * calculateRatioOfAc(rank) * sum;
+//        论文中止时，只有第一作者扣分
+        double flagForSuspend = (internalPaper.getResult() == InternalPaper.SUSPEND && rank == 1) ? 1.0 : 0.0;
+
+        return calculateWeightOfAc(internalPaper) * calculateRatioOfAc(rank) * sum * flagForSuspend;
     }
 
     /**

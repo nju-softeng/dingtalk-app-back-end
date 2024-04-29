@@ -166,6 +166,14 @@ public interface UserRepository extends CustomizedRepository<User, Integer>, Jpa
     void enableUser(int uid);
 
     /**
+     * 停用用户
+     * @param uid
+     */
+    @Modifying
+    @Query("update User set deleted = true where id = :uid")
+    void disableUser(int uid);
+
+    /**
      * 查询所有被禁用的用户
      * @return
      */

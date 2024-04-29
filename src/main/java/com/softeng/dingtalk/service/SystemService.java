@@ -293,7 +293,7 @@ public class SystemService {
      * @param uid
      */
     public void disableUser(int uid) {
-        userRepository.deleteById(uid);
+        userRepository.disableUser(uid);
     }
 
 
