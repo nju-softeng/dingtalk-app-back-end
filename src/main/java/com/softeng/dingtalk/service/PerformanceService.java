@@ -4,6 +4,7 @@ import com.softeng.dingtalk.dao.repository.AcRecordRepository;
 import com.softeng.dingtalk.dao.repository.BugRepository;
 import com.softeng.dingtalk.dao.repository.DcSummaryRepository;
 import com.softeng.dingtalk.dao.repository.UserRepository;
+import com.softeng.dingtalk.entity.AcRecord;
 import com.softeng.dingtalk.entity.DcSummary;
 import com.softeng.dingtalk.enums.Position;
 import lombok.extern.slf4j.Slf4j;
@@ -138,6 +139,11 @@ public class PerformanceService {
                 "w3", dc.getWeek3(),
                 "w4", dc.getWeek4(),
                 "w5", dc.getWeek5());
+    }
+
+//    todo
+    public void addPerformance(AcRecord acRecord) {
+        acRecordRepository.save(acRecord);
     }
 
 }

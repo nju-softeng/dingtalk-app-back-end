@@ -1,12 +1,20 @@
 package com.softeng.dingtalk.controller;
 
+import com.softeng.dingtalk.aspect.AccessPermission;
+import com.softeng.dingtalk.component.UserContextHolder;
+import com.softeng.dingtalk.dto.CommonResult;
+import com.softeng.dingtalk.entity.AcRecord;
+import com.softeng.dingtalk.entity.User;
+import com.softeng.dingtalk.enums.PermissionEnum;
 import com.softeng.dingtalk.service.PerformanceService;
+import com.softeng.dingtalk.service.UserService;
 import com.softeng.dingtalk.vo.DateVO;
 import com.softeng.dingtalk.vo.TopupVO;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import javax.annotation.Resource;
 import java.util.List;
 import java.util.Map;
 
@@ -19,6 +27,10 @@ import java.util.Map;
 @RestController
 @RequestMapping("/api")
 public class PerformanceController {
+    @Resource
+    UserContextHolder userContextHolder;
+    @Resource
+    UserService userService;
     @Autowired
     PerformanceService performanceService;
 
@@ -84,6 +96,18 @@ public class PerformanceController {
     @PostMapping("/performance/topup")
     public void updatetopup(@RequestBody TopupVO vo) {
         performanceService.updateTopup(vo.getUid(), vo.getYearmonth(), vo.getTopup());
+    }
+
+//    todo
+    @PostMapping("/performance")
+    @AccessPermission(PermissionEnum.EDIT_ANY_USER_INFO)
+    public CommonResult<String> addPerformance(@RequestBody AcRecord acRecord) {
+        User auditor = new User(userContextHolder.getUserContext().getUid());
+        User user = new User(acRecord.getUser().getId());
+        acRecord.setAuditor(auditor);
+        acRecord.setUser(user);
+        performanceService.addPerformance(acRecord);
+        return CommonResult.success("添加成功");
     }
 
 }
