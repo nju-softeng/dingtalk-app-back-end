@@ -244,8 +244,7 @@ public class PaperService {
      */
     public double calculateAc(InternalPaper internalPaper, double sum, int rank) {
 //        论文中止时，只有第一作者扣分
-        double flagForSuspend = (internalPaper.getResult() == InternalPaper.SUSPEND && rank == 1) ? 1.0 : 0.0;
-
+        double flagForSuspend = (internalPaper.getResult() != InternalPaper.SUSPEND || rank == 1) ? 1.0 : 0.0;
         return calculateWeightOfAc(internalPaper) * calculateRatioOfAc(rank) * sum * flagForSuspend;
     }
 
@@ -260,10 +259,10 @@ public class PaperService {
             log.info("论文没有处在计算ac的状态");
             return;
         }
-        if(internalPaper.hasAccepted() && !internalPaper.hasCompleteFile()) {
-            log.info("论文文件不完整，无法生成ac");
-            return;
-        }
+//        if(internalPaper.hasAccepted() && !internalPaper.hasCompleteFile()) {
+//            log.info("论文文件不完整，无法生成ac");
+//            return;
+//        }
         // 1. 获取 paperDetails
         log.info("获取 paperDetails");
         var paperDetails = internalPaper.getPaperDetails();
@@ -278,13 +277,12 @@ public class PaperService {
         );
 
         // 3. 查询该类型论文对应的总 AC
-        log.info("查询该类型论文对应的总 AC");
         double sum = paperLevelRepository.getValue(internalPaper.getPaperType());
+        log.info("查询该类型论文对应的总 AC：" + sum);
 
         // 4. 更新 paperDetail 对应的 AcRecord
         log.info("更新 paperDetail 对应的 AcRecord");
         paperDetails.forEach(paperDetail -> {
-            log.info("更新ac值为："+ calculateAc(internalPaper, sum, paperDetail.getNum()));
             paperDetail.setAcRecord(new AcRecord(
                     paperDetail.getUser(),
                     null,
@@ -297,12 +295,16 @@ public class PaperService {
 
         // 6. 更新paperDetails表和acRecord表
         log.info("更新paperDetails表和acRecord表");
-        acRecordRepository.saveAll(
-                paperDetails.stream()
-                        .map(PaperDetail::getAcRecord)
-                        .collect(Collectors.toList())
-        );
+//        acRecordRepository.saveAll(
+//                paperDetails.stream()
+//                        .map(PaperDetail::getAcRecord)
+//                        .collect(Collectors.toList())
+//        );
+        paperDetails.forEach(paperDetail -> {
+            acRecordRepository.save(paperDetail.getAcRecord());
+        });
         paperDetailRepository.saveAll(paperDetails);
+        log.info("完成");
     }
 
     /**
