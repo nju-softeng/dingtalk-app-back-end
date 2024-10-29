@@ -244,12 +244,7 @@ public class PaperService {
      */
     public double calculateAc(InternalPaper internalPaper, double sum, int rank) {
 //        论文中止时，只有第一作者扣分
-        double flagForSuspend = (internalPaper.getResult() == InternalPaper.SUSPEND && rank == 1) ? 1.0 : 0.0;
-        log.info("计算过程");
-        log.info("internalPaper: " + internalPaper);
-        log.info("calculateWeightOfAc(internalPaper) :" + calculateWeightOfAc(internalPaper));
-        log.info("calculateRatioOfAc(rank): " + calculateRatioOfAc(rank));
-        log.info("flagForSuspend: " + flagForSuspend);
+        double flagForSuspend = (internalPaper.getResult() != InternalPaper.SUSPEND || rank == 1) ? 1.0 : 0.0;
         return calculateWeightOfAc(internalPaper) * calculateRatioOfAc(rank) * sum * flagForSuspend;
     }
 
