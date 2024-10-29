@@ -295,12 +295,16 @@ public class PaperService {
 
         // 6. 更新paperDetails表和acRecord表
         log.info("更新paperDetails表和acRecord表");
-        acRecordRepository.saveAll(
-                paperDetails.stream()
-                        .map(PaperDetail::getAcRecord)
-                        .collect(Collectors.toList())
-        );
+//        acRecordRepository.saveAll(
+//                paperDetails.stream()
+//                        .map(PaperDetail::getAcRecord)
+//                        .collect(Collectors.toList())
+//        );
+        paperDetails.forEach(paperDetail -> {
+            acRecordRepository.save(paperDetail.getAcRecord());
+        });
         paperDetailRepository.saveAll(paperDetails);
+        log.info("完成");
     }
 
     /**
