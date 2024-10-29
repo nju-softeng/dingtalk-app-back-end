@@ -284,6 +284,7 @@ public class PaperService {
         // 4. 更新 paperDetail 对应的 AcRecord
         log.info("更新 paperDetail 对应的 AcRecord");
         paperDetails.forEach(paperDetail -> {
+            log.info("更新ac值为："+ calculateAc(internalPaper, sum, paperDetail.getNum()));
             paperDetail.setAcRecord(new AcRecord(
                     paperDetail.getUser(),
                     null,
