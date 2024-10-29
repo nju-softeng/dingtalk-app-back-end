@@ -278,8 +278,8 @@ public class PaperService {
         );
 
         // 3. 查询该类型论文对应的总 AC
-        log.info("查询该类型论文对应的总 AC");
         double sum = paperLevelRepository.getValue(internalPaper.getPaperType());
+        log.info("查询该类型论文对应的总 AC：" + sum);
 
         // 4. 更新 paperDetail 对应的 AcRecord
         log.info("更新 paperDetail 对应的 AcRecord");
