@@ -6,6 +6,7 @@ import com.softeng.dingtalk.dao.repository.*;
 import com.softeng.dingtalk.entity.*;
 import com.softeng.dingtalk.dao.mapper.InternalPaperMapper;
 
+import com.softeng.dingtalk.enums.Position;
 import com.softeng.dingtalk.vo.*;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -257,12 +258,12 @@ public class PaperService {
             && result != InternalPaper.REJECT
             && result != InternalPaper.SUSPEND) {
             log.info("论文没有处在计算ac的状态");
-            return;
+            throw new ResponseStatusException(HttpStatus.CONFLICT, "论文没有处在计算ac的状态");
         }
-//        if(internalPaper.hasAccepted() && !internalPaper.hasCompleteFile()) {
-//            log.info("论文文件不完整，无法生成ac");
-//            return;
-//        }
+        if(internalPaper.hasAccepted() && !internalPaper.hasCompleteFile()) {
+            log.info("论文文件不完整，无法生成ac");
+            throw new ResponseStatusException(HttpStatus.CONFLICT, "论文文件不完整，无法生成ac");
+        }
         // 1. 获取 paperDetails
         log.info("获取 paperDetails");
         var paperDetails = internalPaper.getPaperDetails();
@@ -283,10 +284,16 @@ public class PaperService {
         // 4. 更新 paperDetail 对应的 AcRecord
         log.info("更新 paperDetail 对应的 AcRecord");
         paperDetails.forEach(paperDetail -> {
+            User user = paperDetail.getUser();
+            double ac = calculateAc(internalPaper, sum, paperDetail.getNum());
+//            专业硕士参与非一作投稿拒稿不扣分
+            if(ac < 0 && user.getPosition() == Position.PROFESSIONAL && paperDetail.getNum() != 1) {
+                ac = 0;
+            }
             paperDetail.setAcRecord(new AcRecord(
-                    paperDetail.getUser(),
+                    user,
                     null,
-                    calculateAc(internalPaper, sum, paperDetail.getNum()),
+                    ac,
                     internalPaper.getReason(),
                     AcRecord.PAPER,
                     LocalDate.now().atTime(8, 0)
