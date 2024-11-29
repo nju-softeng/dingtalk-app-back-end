@@ -353,8 +353,8 @@ public class PaperService {
         internalPaper.setUpdateDate(updateDate);
         internalPaperRepository.save(internalPaper);
         // 4. 更新论文 ac
-        log.info("更新论文 ac");
-        paperService.calculateInternalPaperAc(internalPaper);
+//        log.info("更新论文 ac");
+//        paperService.calculateInternalPaperAc(internalPaper);
 
         // 5. 插入相关消息
         notifyService.paperAcMessage(internalPaper);
