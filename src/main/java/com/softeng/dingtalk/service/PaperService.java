@@ -264,12 +264,12 @@ public class PaperService {
             throw new ResponseStatusException(HttpStatus.CONFLICT, "论文没有处在计算ac的状态");
         }
         if(internalPaper.hasAccepted() && !internalPaper.hasCompleteFile()) {
-            Vote vote = internalPaperRepository.findVoteById(internalPaper.getId());
-            if(vote != null) {
-                voteService.computeVoteAc(vote, InternalPaper.ACCEPT, LocalDateTime.of(internalPaper.getUpdateDate(), LocalTime.of(8, 0)));
-            }
-            log.info("论文文件不完整，无法生成ac, 但已生成投票ac");
-            throw new ResponseStatusException(HttpStatus.OK, "投票ac生成成功，但是由于论文文件不完整，论文ac未成功生成");
+//            Vote vote = internalPaperRepository.findVoteById(internalPaper.getId());
+//            if(vote != null) {
+//                voteService.computeVoteAc(vote, InternalPaper.ACCEPT, LocalDateTime.of(internalPaper.getUpdateDate(), LocalTime.of(8, 0)));
+//            }
+//            log.info("论文文件不完整，无法生成ac, 但已生成投票ac");
+            throw new ResponseStatusException(HttpStatus.OK, "但是由于论文文件不完整，论文ac未成功生成");
         }
         // 1. 获取 paperDetails
         log.info("获取 paperDetails");
