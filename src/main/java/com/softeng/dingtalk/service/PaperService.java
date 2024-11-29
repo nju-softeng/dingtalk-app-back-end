@@ -21,6 +21,7 @@ import org.springframework.web.server.ResponseStatusException;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -53,6 +54,8 @@ public class PaperService {
     InternalPaperMapper internalPaperMapper;
     @Autowired
     ExternalPaperRepository externalPaperRepository;
+    @Autowired
+    VoteService voteService;
 
     @Autowired
     PaperService paperService;
@@ -261,8 +264,12 @@ public class PaperService {
             throw new ResponseStatusException(HttpStatus.CONFLICT, "论文没有处在计算ac的状态");
         }
         if(internalPaper.hasAccepted() && !internalPaper.hasCompleteFile()) {
-            log.info("论文文件不完整，无法生成ac");
-            throw new ResponseStatusException(HttpStatus.CONFLICT, "论文文件不完整，无法生成ac");
+            Vote vote = internalPaperRepository.findVoteById(internalPaper.getId());
+            if(vote != null) {
+                voteService.computeVoteAc(vote, InternalPaper.ACCEPT, LocalDateTime.of(internalPaper.getUpdateDate(), LocalTime.of(8, 0)));
+            }
+            log.info("论文文件不完整，无法生成ac, 但已生成投票ac");
+            throw new ResponseStatusException(HttpStatus.OK, "投票ac生成成功，但是由于论文文件不完整，论文ac未成功生成");
         }
         // 1. 获取 paperDetails
         log.info("获取 paperDetails");
@@ -296,7 +303,7 @@ public class PaperService {
                     ac,
                     internalPaper.getReason(),
                     AcRecord.PAPER,
-                    LocalDate.now().atTime(8, 0)
+                    internalPaper.getUpdateDate().atTime(8, 0)
             ));
         });
 
