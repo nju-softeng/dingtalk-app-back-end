@@ -269,7 +269,7 @@ public class PaperService {
 //                voteService.computeVoteAc(vote, InternalPaper.ACCEPT, LocalDateTime.of(internalPaper.getUpdateDate(), LocalTime.of(8, 0)));
 //            }
 //            log.info("论文文件不完整，无法生成ac, 但已生成投票ac");
-            throw new ResponseStatusException(HttpStatus.OK, "但是由于论文文件不完整，论文ac未成功生成");
+            throw new ResponseStatusException(HttpStatus.OK, "由于论文文件不完整，论文ac未生成，请补充所有文件");
         }
         // 1. 获取 paperDetails
         log.info("获取 paperDetails");
@@ -352,9 +352,14 @@ public class PaperService {
         internalPaper.setResult(this.getPaperResult(true,result));
         internalPaper.setUpdateDate(updateDate);
         internalPaperRepository.save(internalPaper);
-        // 4. 更新论文 ac
-//        log.info("更新论文 ac");
-//        paperService.calculateInternalPaperAc(internalPaper);
+
+        log.info("更新论文 ac");
+        paperService.calculateInternalPaperAc(internalPaper);
+//        if(internalPaper.getResult() != InternalPaper.ACCEPT) {
+//            log.info("更新被拒绝或者中止的论文的相关 ac");
+//            paperService.calculateInternalPaperAc(internalPaper);
+//        }
+
 
         // 5. 插入相关消息
         notifyService.paperAcMessage(internalPaper);

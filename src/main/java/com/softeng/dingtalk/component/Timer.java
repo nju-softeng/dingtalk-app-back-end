@@ -210,7 +210,7 @@ public class Timer {
                 .filter((user -> user.getStuNum() != null))
                 .forEach((user -> {
                     //                排除教师用户
-                    if(user.getPosition() == Position.TEACHER) return;
+                    if(user.getPosition() == Position.TEACHER || user.getPosition() == Position.DOCTOR) return;
                     StuNumParser parser= StuNumParserFactory.generateParser(user.getStuNum().trim().length());
                     assert parser != null;
                     user.setPosition(parser.parse(user.getStuNum()));
